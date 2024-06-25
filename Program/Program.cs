@@ -1,107 +1,211 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 namespace Program
-{
-    public class Node
+{   
+    public class Heap
     {
-        public int data;
+        public int arraySize;
+        public int size;
+        public int[] array;
 
-        public Node right;
-        public Node left;   
+        public Heap()
+        {
+            arraySize = 8;
+            size = 0;
+            array = new int[arraySize];
+        }
+        //public void Insert(int data)
+        //{
+        //    if (size + 1 == arraySize)
+        //    {
+        //        Resize();
+        //    }
+        //
+        //    size++;
+        //    int child = size;
+        //    int parent = child / 2;
+        //
+        //    array[child] = data;
+        //
+        //    for (int i = parent; i > 0; i--)
+        //    {
+        //        if (array[child] > array[i])
+        //        {
+        //            Swap(child, i);
+        //            child = i;
+        //        }
+        //        else
+        //        {
+        //            break;
+        //        }
+        //    }
+        //}
+        //private void Swap(int i, int j)
+        //{
+        //    int temp = array[i];
+        //    array[i] = array[j];
+        //    array[j] = temp;
+        //}
+        //private void Resize()
+        //{
+        //    arraySize *= 2;
+        //    int[] newArray = new int[arraySize];
+        //    Array.Copy(array, newArray, size + 1);
+        //    array = newArray;
+        //}
+
+        private void Swap(ref int x, ref int y)
+        {
+            int temporary = x;
+            x = y;
+            y = temporary;
+        }
+
+        public void Insert(int data)
+        {
+            if(size >= arraySize - 1)
+            {
+                Console.WriteLine("Heap is Full");
+            }
+            else
+            {
+                array[++size] = data;
+
+                int child = size;
+                int parent = size / 2;
+
+                while(child > 1)
+                {
+                    if (array[child] > array[parent])
+                    {
+                        Swap(ref array[child], ref array[parent]);
+                    }
+                    child = parent;
+                    parent = child / 2;
+                }
+            }
+        }
+        
+        public int Remove()
+        {
+            //1. Heap이 비어있다면 ErrorCode를 반환
+            //2. 임시 변수를 생성한 다음 array[1]을 저장
+
+            //if(size == 0)
+            //{
+            //    Console.WriteLine("Heap is Empty");
+            //}
+            //
+            //int removeFirst = array[1];
+            //
+            //array[1] = array[size];
+            //size--;
+            //
+            //int parent = 1;
+            //while (true)
+            //{
+            //    int leftChild = 2 * parent;
+            //    int rightChild = 2 * parent + 1;
+            //    int largest = parent;
+            //
+            //    // 왼쪽 자식이 더 크면 largest 갱신
+            //    if (leftChild <= size && array[leftChild] > array[largest])
+            //        largest = leftChild;
+            //
+            //    // 오른쪽 자식이 더 크면 largest 갱신
+            //    if (rightChild <= size && array[rightChild] > array[largest])
+            //        largest = rightChild;
+            //
+            //    // largest가 변경되지 않았다면 힙 속성 복구 완료
+            //    if (largest == parent)
+            //        break;
+            //
+            //    // parent와 largest 교환
+            //    Swap(ref array[parent], ref array[largest]);
+            //    parent = largest;
+            //}
+            //
+            //return removeFirst;
+
+            if(size <= 0)
+            {
+                //1. Heap이 비어있다면 Error 코드를 출력
+                Console.WriteLine("Heap is Empty");
+                return -9999;
+            }
+
+            //2. 임시 변수에 array[1] 값을 보관
+            int result = array[1];
+
+            //3. size로 가리키는 배열의 값을 첫 번째 원소에 넣어준다.
+            array[1] = array[size];
+
+            //4. size로 가리키는 배열의 값을 초기화
+            array[size] = 0;
+
+            //5. size의 값을 감소
+            size--;
+
+            int parent = 1;
+
+            while (true)
+            {
+                int leftChild = parent * 2;
+                int rightChild = parent * 2 + 1;
+                int largest = parent;
+
+
+                if (leftChild <= size && array[leftChild] > array[largest])
+                {
+                    largest = leftChild;
+                }
+                if (rightChild <= size && array[rightChild] > array[largest])
+                {
+                    largest = rightChild;
+                }
+
+                if(largest == parent)
+                {
+                    break;
+                }
+                Swap(ref array[parent], ref array[largest]); 
+                parent = largest; 
+            }
+            return result;
+        }
+
+
+
+        public void Show()
+        {
+            for (int i = 1; i <= size; i++)
+            {
+                Console.Write(array[i] + " ");
+            }
+        }
     }
+
+    
+   
 
     internal class Program
     {
-        static Node CreateNode(int data, Node left, Node right)
-        {
-            //1. 새로운 노드를 생성한다
-            Node newNode = new Node();
-
-            //2. 새로운 노드의 data값을 저장한다.
-            newNode.data = data;
-
-            //3. 새로운 노드의 left 값을 저장한다.
-            newNode.left = left;
-            
-            //4. 새로운 노드의 right 값을 저장한다
-            newNode.right = right;
-
-            //5. 새로운 노드를 반환한다.
-
-            return newNode;
-        }
-
-        //전위순회
-        //1. root Node를 방문합니다.
-        //2. 왼쪽 자식 노드를 전위 순회한다.
-        //3. 오른쪽 자식 노드를 전위 순회한다.
-
-        static void Preorder(Node root)
-        {
-            //if(root == null)            
-            //    return;
-            //Console.Write(root.data + " ");
-            //
-            //Preorder(root.left);
-            //
-            //Preorder(root.right);
-
-            if(root != null)
-            {
-                Console.Write(root.data + " ");
-                Preorder(root.left);
-                Preorder(root.right);
-            }
-        }
-
-        static void Inorder(Node root)
-        {
-            if(root != null)
-            {                
-                Inorder(root.left);
-                Console.Write(root.data + " ");
-                Inorder(root.right);
-            }
-        }
-
-
         static void Main(string[] args)
         {
-            //Node leaf1 = CreateNode(4, null, null);
-            //Node leaf2 = CreateNode(5, null, null);
-            //Node branch1 = CreateNode(2, leaf1, leaf2);
-            //
-            //Node leaf3 = CreateNode(6, null, null);
-            //Node leaf4 = CreateNode(7, null, null);
-            //Node branch2 = CreateNode(3, leaf3, leaf4);
-            //
-            //Node root = CreateNode(1, branch1, branch2);
+            // 0번째 인덱스는 비워둔다
+            Heap heap = new Heap();
 
-            Node node7 = CreateNode(7, null, null);
-            Node node6 = CreateNode(6, null, null);
-            Node node5 = CreateNode(5, null, null);
-            Node node4 = CreateNode(4, null, null);
+            heap.Insert(5); //[5]
+            heap.Insert(7); //[7][5]
+            heap.Insert(2); //[7][5][2]
+            heap.Insert(10);//[10][7][5][2]
+            heap.Remove();
 
-            Node node3 = CreateNode(3, node6, node7);
-            Node node2 = CreateNode(2, node4, node5);
-
-            Node node1 = CreateNode(1, node2, node3);
-
-            Node root = CreateNode(1, node2, node3);
-
-            //전위순회
-            //Preorder(root);
-
-            //Preorder(node1);
-
-            //중위순회
-            //Inorder(node1);
-
-            //후위순회
-
+            heap.Show();
         }
     }
 }
