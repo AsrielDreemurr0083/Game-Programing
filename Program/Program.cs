@@ -4,56 +4,197 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using static System.Net.Mime.MediaTypeNames;
 namespace Program
 {   
-    public class AdjacencyList<T>
+    public class BinarySearchTree<T>
     {
         public class Node
         {
-            T data;
-            Node next;
+            public int data;
+            public Node left;
+            public Node right;
+        }
+        public Node root;
 
-            public Node(T data, Node link = null)
+        public BinarySearchTree()
+        {
+            root = null;
+        }
+
+        Node CreateNode(int data)
+        {
+            //1. 새로운 노드를 생성
+            Node Node = new Node();
+            //2. 새로운 노드의 data를 초기화
+            Node.data = data;
+            //3. 새로운 노드의 left 값을 초기화
+            Node.left = null;
+            //4. 새로운 노드의 right 값을 초기화
+            Node.right = null;
+            //5. 새로운 노드를 반환
+            return Node;
+        }
+
+        public void Insert(int data)
+        {
+            if(root == null)
             {
-                this.data = data;
-                next = link;
+                root = CreateNode(data);
+            }
+            else
+            {
+                Node currentNode = root;
+
+                while(currentNode != null)
+                {
+                    if(currentNode.data > data)
+                    {
+                        if(currentNode.left == null)
+                        {
+                            currentNode.left = CreateNode(data);
+                            break;
+                        }
+                        else
+                        {
+                            currentNode = currentNode.left;
+                        }
+                    }
+                    else
+                    {
+                        if(currentNode.right == null)
+                        {
+                            currentNode.right = CreateNode(data);
+                            break;
+                        }
+                        else
+                        {
+                            currentNode = currentNode.right;
+                        }
+                    }
+                }
             }
         }
 
-        private int size;//정점의 개수
-        private int arraySize;//인접리스트의 크기
-
-        private T[] vertex;//정점의 집합
-        private Node[] list;//인접 리스트
-
-        public AdjacencyList()
+        public bool Find(int data)
         {
-            size = 0;
-            arraySize = 10;
-            vertex = new T[arraySize];
-            list = new Node[arraySize];
+            Node currentNode = root;
+            while(currentNode != null)
+            {
+                if(currentNode.data == data)
+                {
+                    return true;
+                }
+                else
+                {
+                    if(currentNode.data > data)
+                    {
+                        currentNode = currentNode.left;
+                    }
+                    else
+                    {
+                        currentNode = currentNode.right;
+                    }
+                }
+            }
+            return false;
         }
 
-    }
-    internal class Program
+        //public bool Find(int data)
+        //{
+        //    Node currentNode = root;
+        //    while(currentNode != null)
+        //    {
+        //        if(data == currentNode.data)
+        //        {
+        //            return true;
+        //        }
+        //        else if(data < currentNode.data) 
+        //        {
+        //            currentNode = currentNode.left;
+        //        }
+        //        else
+        //        {
+        //            currentNode = currentNode.right;
+        //        }
+        //    }
+        //    return false;
+        //}
+
+        public void Inorder(Node root)
+        {
+            if(root != null)
+            {
+                Inorder(root.left);
+                Console.Write(root.data + " ");
+                Inorder(root.right);
+            }
+        }
+
+       //public void Inorder(Node root)
+       //{
+       //    
+       //}
+
+        //public void Insert(int data)
+        //{
+        //    if(root == null)
+        //    {
+        //        Console.WriteLine("Root is Empty");
+        //        root = CreateNode(data);
+        //        return;
+        //    }
+        //
+        //    Node currentNode = root;
+        //    while (true)
+        //    {
+        //       if(data < currentNode.data)
+        //       {
+        //           if(currentNode.left == null)
+        //           {
+        //               currentNode.left = CreateNode(data);
+        //               break;
+        //           }
+        //           currentNode = currentNode.left;
+        //       }
+        //       else if(data > currentNode.data)
+        //       {
+        //           if(currentNode.right == null)
+        //           {
+        //               currentNode.right = CreateNode(data);
+        //               break;
+        //           }
+        //           currentNode = currentNode.right;
+        //       }
+        //       else
+        //       {
+        //           break;
+        //       }
+        //    }
+        //}
+        
+    } 
+
+   internal class Program
     {
         static void Main(string[] args)
         {
-            #region 인접리스트
-            //그래프의 각 정점에 인접한 정점들을 연결리스트로
-            //표현하는 방법이다.
+            BinarySearchTree<int> binarySearchTree = new BinarySearchTree<int>();
 
-            //장점
-            // 그래프의 모든 간선의 수를 O(V+E)로 표현할 수 있다.
+            
+            binarySearchTree.Insert(10);
+            binarySearchTree.Insert(7);
+            binarySearchTree.Insert(12);
+            binarySearchTree.Insert(5);
+            binarySearchTree.Insert(9);
 
-            //단점
-            // 두 정점을 연결하는 간선을 조회하거나 정점의 차수를 알기 위해서
-            // 정점의 인접 리스트를 모두 탐색해야 하므로,
-            // 정점의 차수만큼의 시간이 필요하다.
+            Console.WriteLine("binarySearchTree Find(7) : " + binarySearchTree.Find(7));
+            Console.WriteLine("binarySearchTree Find(11) : " + binarySearchTree.Find(11));
 
-            //class AdjacencyList
-            #endregion
+            Console.WriteLine();
+
+            binarySearchTree.Inorder(binarySearchTree.root);
         }
     }
 }
